@@ -2,7 +2,7 @@ use bevy_ecs::entity::Entity;
 use bevy_input::{
     keyboard::{KeyCode, KeyboardInput, NativeKeyCode},
     mouse::MouseButton,
-    touch::{ForceTouch, TouchInput, TouchPhase},
+    touch::{ForceTouch, PenEvent, PenPreferredAction, TouchInput, TouchPhase},
     ButtonState,
 };
 use bevy_math::Vec2;
@@ -66,6 +66,35 @@ pub fn convert_touch_input(
             winit::event::Force::Normalized(x) => ForceTouch::Normalized(x),
         }),
         id: touch_input.id,
+    }
+}
+
+pub fn convert_pen_event(pen_event: winit::event::PenEvent) -> Option<PenEvent> {
+    Some(match pen_event {
+        winit::event::PenEvent::DoubleTap {
+            preferred_action, ..
+        } => PenEvent::double_tap(preferred_action.map(convert_pen_preferred_action)),
+        _ => return None,
+    })
+}
+
+pub fn convert_pen_preferred_action(
+    preferred_action: winit::event::PenPreferredAction,
+) -> PenPreferredAction {
+    match preferred_action {
+        winit::event::PenPreferredAction::Ignore => PenPreferredAction::Ignore,
+        winit::event::PenPreferredAction::SwitchEraser => PenPreferredAction::SwitchEraser,
+        winit::event::PenPreferredAction::SwitchPrevious => PenPreferredAction::SwitchPrevious,
+        winit::event::PenPreferredAction::ShowColorPalette => PenPreferredAction::ShowColorPalette,
+        winit::event::PenPreferredAction::ShowInkAttributes => {
+            PenPreferredAction::ShowInkAttributes
+        }
+        winit::event::PenPreferredAction::ShowContextualPalette => {
+            PenPreferredAction::ShowContextualPalette
+        }
+        winit::event::PenPreferredAction::RunSystemShortcut => {
+            PenPreferredAction::RunSystemShortcut
+        }
     }
 }
 

@@ -1,3 +1,7 @@
+# TODO remove_me
+[patch.crates-io.winit]
+path = "../winit"
+
 [package]
 name = "bevy"
 version = "0.14.0-dev"

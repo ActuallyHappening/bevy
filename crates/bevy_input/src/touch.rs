@@ -440,6 +440,88 @@ pub fn touch_screen_input_system(
     }
 }
 
+/// An event happened on a connected pen device.
+///
+/// Mirrors [`winit::event::PenEvent`]
+#[derive(Event, Debug, Hash, PartialEq, Eq, Clone, Reflect)]
+#[reflect(Debug, Hash, PartialEq)]
+#[cfg_attr(
+    feature = "serialize",
+    derive(serde::Serialize, serde::Deserialize),
+    reflect(Serialize, Deserialize)
+)]
+#[non_exhaustive]
+pub enum PenEvent {
+    /// iOS Double Tap event, when users tap the end of the pencil twice.
+    ///
+    /// Mirrors [`winit::event::PenEvent::DoubleTap`]
+    #[non_exhaustive]
+    DoubleTap {
+        /// The preferred action for the pen event.
+        ///
+        /// See the docs on [`PenPreferredAction`] for more information.
+        preferred_action: Option<PenPreferredAction>,
+    },
+}
+
+impl PenEvent {
+    /// Constructs a [`PenEvent::DoubleTap`] event given only a preferred action.
+    ///
+    /// This is necessary so that `bevy_winit` can construct this event while it still maintaining [`#[non_exhaustive]`](https://doc.rust-lang.org/reference/attributes/type_system.html).
+    /// If new fields are added to [`PenEvent::DoubleTap`], this method will be depreciated.
+    pub fn double_tap(preferred_action: Option<PenPreferredAction>) -> Self {
+        PenEvent::DoubleTap { preferred_action }
+    }
+}
+
+/// The action the user wants performed on a [`PenEvent::DoubleTap`].
+///
+/// Mirrors [`winit::event::PenPreferredAction`]
+#[derive(Event, Debug, Hash, PartialEq, Eq, Clone, Copy, Reflect)]
+#[reflect(Debug, Hash, PartialEq)]
+#[cfg_attr(
+    feature = "serialize",
+    derive(serde::Serialize, serde::Deserialize),
+    reflect(Serialize, Deserialize)
+)]
+#[non_exhaustive]
+pub enum PenPreferredAction {
+    /// An action that does nothing.
+    ///
+    /// Mirrors [`winit::event::PenPreferredAction::Ignore`]
+    Ignore,
+
+    /// An action that switches between the current tool and the eraser.
+    ///
+    /// Mirrors [`winit::event::PenPreferredAction::SwitchEraser`]
+    SwitchEraser,
+
+    /// An action that switches between the current tool and the last used tool.
+    ///
+    /// Mirrors [`winit::event::PenPreferredAction::SwitchPrevious`]
+    SwitchPrevious,
+
+    /// An action that toggles the display of the color palette.
+    ///
+    /// Mirrors [`winit::event::PenPreferredAction::ShowColorPalette`]
+    ShowColorPalette,
+
+    /// An action that toggles the display of the selected tool’s ink attributes.
+    ///
+    /// Mirrors [`winit::event::PenPreferredAction::ShowInkAttributes`]
+    ShowInkAttributes,
+
+    /// An action that toggles shows a contextual palette of markup tools, or undo and redo options if tools aren’t available.
+    ///
+    /// Mirrors [`winit::event::PenPreferredAction::ShowContextualPalette`]
+    ShowContextualPalette,
+
+    /// An action that runs a system shortcut.
+    ///
+    /// Mirrors [`winit::event::PenPreferredAction::RunSystemShortcut`]
+    RunSystemShortcut,
+}
+
 #[cfg(test)]
 mod test {
     use super::Touches;

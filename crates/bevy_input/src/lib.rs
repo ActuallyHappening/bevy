@@ -44,7 +44,7 @@ use bevy_reflect::Reflect;
 use gestures::*;
 use keyboard::{keyboard_input_system, KeyCode, KeyboardFocusLost, KeyboardInput};
 use mouse::{mouse_button_input_system, MouseButton, MouseButtonInput, MouseMotion, MouseWheel};
-use touch::{touch_screen_input_system, TouchInput, Touches};
+use touch::{touch_screen_input_system, PenEvent, TouchInput, Touches};
 
 use gamepad::{
     gamepad_axis_event_system, gamepad_button_event_system, gamepad_connection_system,
@@ -111,7 +111,9 @@ impl Plugin for InputPlugin {
             // touch
             .add_event::<TouchInput>()
             .init_resource::<Touches>()
-            .add_systems(PreUpdate, touch_screen_input_system.in_set(InputSystem));
+            .add_systems(PreUpdate, touch_screen_input_system.in_set(InputSystem))
+						// pen
+            .add_event::<PenEvent>();
 
         // Register common types
         app.register_type::<ButtonState>()
@@ -122,6 +124,7 @@ impl Plugin for InputPlugin {
             .register_type::<DoubleTapGesture>()
             .register_type::<PanGesture>()
             .register_type::<TouchInput>()
+            .register_type::<PenEvent>()
             .register_type::<GamepadEvent>()
             .register_type::<GamepadButtonInput>()
             .register_type::<GamepadSettings>();

@@ -3,7 +3,7 @@
 
 use bevy_ecs::prelude::*;
 use bevy_input::keyboard::KeyboardInput;
-use bevy_input::touch::TouchInput;
+use bevy_input::touch::{PenEvent, TouchInput};
 use bevy_input::{
     gestures::*,
     keyboard::KeyboardFocusLost,
@@ -62,6 +62,7 @@ pub enum WinitEvent {
     PanGesture(PanGesture),
 
     TouchInput(TouchInput),
+		PenEvent(PenEvent),
 
     KeyboardInput(KeyboardInput),
     KeyboardFocusLost(KeyboardFocusLost),
@@ -196,6 +197,11 @@ impl From<TouchInput> for WinitEvent {
     fn from(e: TouchInput) -> Self {
         Self::TouchInput(e)
     }
+}
+impl From<PenEvent> for WinitEvent {
+		fn from(e: PenEvent) -> Self {
+				Self::PenEvent(e)
+		}
 }
 impl From<KeyboardInput> for WinitEvent {
     fn from(e: KeyboardInput) -> Self {

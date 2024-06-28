@@ -315,6 +315,12 @@ impl<T: Event> ApplicationHandler<T> for WinitAppRunnerState<T> {
                 self.winit_events
                     .send(converters::convert_touch_input(touch, location, window));
             }
+            WindowEvent::PenEvent(pen_event) => match converters::convert_pen_event(pen_event) {
+                Some(pen_event) => self.winit_events.send(pen_event),
+                None => {
+                    warn!(message = "Failed to convert pen event from winit::event::PenEvent to bevy_input::touch::PenEvent", note = "This is likely because the pen event type is not supported by Bevy yet.");
+                }
+            },
             WindowEvent::Focused(focused) => {
                 win.focused = focused;
                 self.winit_events.send(WindowFocused { window, focused });
@@ -711,6 +717,9 @@ impl<T: Event> WinitAppRunnerState<T> {
                     world.send_event(e);
                 }
                 WinitEvent::TouchInput(e) => {
+                    world.send_event(e);
+                }
+                WinitEvent::PenEvent(e) => {
                     world.send_event(e);
                 }
                 WinitEvent::KeyboardInput(e) => {
